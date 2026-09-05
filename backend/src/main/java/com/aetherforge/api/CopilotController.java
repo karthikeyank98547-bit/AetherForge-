@@ -1,0 +1,2 @@
+package com.aetherforge.api;import com.aetherforge.service.CopilotService;import jakarta.validation.constraints.NotBlank;import org.springframework.web.bind.annotation.*;import java.util.*;
+@RestController @RequestMapping("/api/v1/copilot") public class CopilotController {record Ask(@NotBlank String message){}private final CopilotService c;public CopilotController(CopilotService c){this.c=c;}@PostMapping Map<String,Object> ask(@RequestBody Ask a){return c.ask(a.message());}}

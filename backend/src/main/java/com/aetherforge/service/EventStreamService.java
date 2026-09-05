@@ -1,0 +1,3 @@
+package com.aetherforge.service;
+import org.springframework.stereotype.Service;import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;import java.util.Set;import java.util.concurrent.CopyOnWriteArraySet;
+@Service public class EventStreamService {private final Set<SseEmitter> clients=new CopyOnWriteArraySet<>();public SseEmitter subscribe(){var e=new SseEmitter(0L);clients.add(e);e.onCompletion(()->clients.remove(e));e.onTimeout(()->clients.remove(e));return e;}public void emit(Object data){for(var e:clients){try{e.send(SseEmitter.event().name("factory-update").data(data));}catch(Exception ex){clients.remove(e);}}}}

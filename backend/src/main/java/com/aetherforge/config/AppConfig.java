@@ -1,0 +1,3 @@
+package com.aetherforge.config;
+import org.springframework.beans.factory.annotation.Value;import org.springframework.context.annotation.*;import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;import org.springframework.security.crypto.password.PasswordEncoder;import org.springframework.web.servlet.config.annotation.*;
+@Configuration public class AppConfig {@Bean PasswordEncoder passwordEncoder(){return new BCryptPasswordEncoder(12);}@Bean WebMvcConfigurer cors(@Value("${aetherforge.cors-origins}")String origins){return new WebMvcConfigurer(){@Override public void addCorsMappings(CorsRegistry r){r.addMapping("/api/**").allowedOrigins(origins.split(",")).allowedMethods("GET","POST","PUT","PATCH","DELETE","OPTIONS").allowedHeaders("*");}};}}

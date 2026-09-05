@@ -1,0 +1,31 @@
+spring:
+  application:
+    name: aetherforge
+  datasource:
+    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/aetherforge}
+    username: ${POSTGRES_USER:aetherforge}
+    password: ${POSTGRES_PASSWORD:aetherforge}
+    hikari:
+      maximum-pool-size: 12
+      minimum-idle: 2
+  flyway:
+    enabled: true
+  jackson:
+    default-property-inclusion: non_null
+server:
+  port: 8080
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+aetherforge:
+  cors-origins: ${CORS_ORIGINS:http://localhost:3000}
+  token-ttl-minutes: ${APP_TOKEN_TTL_MINUTES:480}
+  ml-service-url: ${ML_SERVICE_URL:http://localhost:8000}
+  llm-base-url: ${LLM_BASE_URL:}
+  llm-api-key: ${LLM_API_KEY:}
+  llm-model: ${LLM_MODEL:}

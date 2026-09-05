@@ -1,0 +1,2 @@
+package com.aetherforge.api;import com.aetherforge.repo.UserRepository;import org.springframework.security.access.prepost.PreAuthorize;import org.springframework.web.bind.annotation.*;import java.util.*;
+@RestController @RequestMapping("/api/v1/users") public class UserController {private final UserRepository repo;public UserController(UserRepository r){repo=r;}@GetMapping @PreAuthorize("hasRole('ADMIN')") List<Map<String,Object>> list(){return repo.users();}}

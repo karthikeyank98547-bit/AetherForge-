@@ -1,0 +1,49 @@
+services:
+  postgres:
+    image: postgres:18
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-aetherforge}
+      POSTGRES_USER: ${POSTGRES_USER:-aetherforge}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-aetherforge}
+    ports: ["5432:5432"]
+    volumes: ["pgdata:/var/lib/postgresql"]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-aetherforge} -d ${POSTGRES_DB:-aetherforge}"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  ml:
+    build: ./ml
+    ports: ["8000:8000"]
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    build: ./backend
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB:-aetherforge}
+      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER:-aetherforge}
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD:-aetherforge}
+      CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:3000}
+      ML_SERVICE_URL: http://ml:8000
+      LLM_BASE_URL: ${LLM_BASE_URL:-}
+      LLM_API_KEY: ${LLM_API_KEY:-}
+      LLM_MODEL: ${LLM_MODEL:-}
+    depends_on:
+      postgres: {condition: service_healthy}
+      ml: {condition: service_healthy}
+    ports: ["8080:8080"]
+
+  frontend:
+    build: ./frontend
+    environment:
+      VITE_API_URL: ${VITE_API_URL:-http://localhost:8080/api/v1}
+    depends_on: [backend]
+    ports: ["3000:80"]
+
+volumes:
+  pgdata:
